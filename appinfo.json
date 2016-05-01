@@ -1,0 +1,20 @@
+{
+  "uuid": "a06f2f0a-f0e8-4238-bea0-e7e025830910",
+  "shortName": "note8",
+  "longName": "note8",
+  "companyName": "MakeAwesomeHappen",
+  "versionLabel": "0.1",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt", "chalk"],
+  "enableMultiJS": true,
+  "capabilities": [ "configurable" ],
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
