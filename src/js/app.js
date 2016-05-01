@@ -3,7 +3,7 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'https://what.re/pebble/config/index.html';
+  var url = 'http://what.re/pebble/config/index.html';
   console.log('Showing configuration page: ' + url);
 
   Pebble.openURL(url);
@@ -24,8 +24,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
   }
   buffer.push(0);
 
-  dict['AppKeyNote'] = buffer;
-
+  dict['AppKeyNote'] = note;
+  console.log('Sending: ' + JSON.stringify(dict))
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {
     console.log('Send successful: ' + JSON.stringify(dict));
