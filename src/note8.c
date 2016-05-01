@@ -6,6 +6,9 @@ static int ScrollByAmount;
 static TextLayer *text_layer;
 static char s_scroll_text[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quam tellus, fermentu  m quis vulputate quis, vestibulum interdum sapien. Vestibulum lobortis pellentesque pretium. Quisque ultricies purus e  u orci convallis lacinia. Cras a urna mi. Donec convallis ante id dui dapibus nec ullamcorper erat egestas. Aenean a m  auris a sapien commodo lacinia. Sed posuere mi vel risus congue ornare. Curabitur leo nisi, euismod ut pellentesque se  d, suscipit sit amet lorem. Aliquam eget sem vitae sem aliquam ornare. In sem sapien, imperdiet eget pharetra a, lacin  ia ac justo. Suspendisse at ante nec felis facilisis eleifend.";
 
+const uint32_t inbox_size = 64;
+const uint32_t outbox_size = 256;
+
 typedef enum {
   ScrollDirectionDown,
   ScrollDirectionUp,
@@ -18,8 +21,8 @@ typedef enum {
 #define NoteMaxLength 512
 
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "trying to receive");
     Tuple *location_tuple = dict_find(iter, AppKeyNote);
-    text_layer_set_text(text_layer, "received");
     if(location_tuple) {
         char *note = location_tuple->value->cstring;
         static char s_buffer[NoteMaxLength];
@@ -90,6 +93,7 @@ static void init(void) {
     .load = window_load,
     .unload = window_unload,
   });
+  app_message_open(inbox_size, outbox_size);
   app_message_register_inbox_received(inbox_received_callback);
   const bool animated = true;
   window_stack_push(window, animated);
