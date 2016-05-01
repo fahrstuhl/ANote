@@ -23,7 +23,7 @@
     <div class='item-container'>
       <div class='item-container-content'>
         <div class='item'>
-          Use this configuration page to choose the settings you would like applied to this app.
+          Enter your note below.
         </div>
       </div>
     </div>
@@ -36,9 +36,6 @@
           <textarea id='note_input' type='text' class='item-input' style='background-color:#ffffff'></textarea>
         </label>
       </div>
-      <div class='item-container-footer'>
-        Choose the app's background color. Note: Only available on Basalt watches that support many colors.
-      </div>
     </div>
 
     <div class='item-container'>
@@ -48,7 +45,9 @@
     </div>
   </body>
   <script>
+    console.log('opened config');
   function getConfigData() {
+    console.log('getconfigdata');
     var note_input = document.getElementById('note_input');
  
     var options = {
@@ -63,6 +62,7 @@
   }
 
   function getQueryParam(variable, defaultValue) {
+    console.log('getqueryparam');
     var query = location.search.substring(1);
     var vars = query.split('&');
     for (var i = 0; i < vars.length; i++) {
