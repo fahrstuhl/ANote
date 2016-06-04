@@ -25,6 +25,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
   buffer.push(0);
 
   dict['AppKeyNote'] = note;
+  dict['AppKeyNoteLength'] = note.length;
   console.log('Sending: ' + JSON.stringify(dict))
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {

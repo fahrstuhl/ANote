@@ -12,7 +12,8 @@
     "watchface": false
   },
   "appKeys": {
-    "AppKeyNote": 0
+    "AppKeyNoteLength": 0,
+    "AppKeyNote": 1
   },
   "resources": {
     "media": []
