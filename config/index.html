@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style='height:100%'>
   <head>
   <title>Slate Example Configuration</title>
   <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
@@ -17,26 +17,32 @@
   </style>
   </head>
 
-  <body>
-    <h1 class='title'>Slate Example Configuration</h1>
+  <body style='height:100%'>
+    <h1 class='title'>A Note on Pebble</h1>
 
-    <div class='item-container'>
-      <div class='item-container-content'>
-        <div class='item'>
+    <div class='item-container' style='height:50%'>
+      <div class='item-container-header'>Note</div>
+      <div class='item-container-content' style='height:95%'>
+        <label class='item' style='height:95%' >
           Enter your note below.
-        </div>
-      </div>
-    </div>
-
-    <div class='item-container'>
-      <div class='item-container-header'>Customizability</div>
-      <div class='item-container-content'>
-        <label class='item'>
-          Note
-          <textarea id='note_input' type='text' class='item-input' style='background-color:#ffffff'></textarea>
+          <textarea id='note_input' type='text' class='item-input' style='background-color:#ffffff; height:85%'></textarea>
         </label>
       </div>
     </div>
+
+<div class="item-container">
+  <div class="item-container-header">Settings</div>
+  <div class="item-container-content">
+    <label class="item">
+      Font Size
+      <select id="font_size_select" dir='rtl' class="item-select">
+        <option class="item-select-option" value=18>Smaller</option>
+        <option class="item-select-option" value=24 selected>Default</option>
+        <option class="item-select-option" value=28>Larger</option>
+      </select>
+    </label>
+  </div>
+</div>
 
     <div class='item-container'>
       <div class='button-container'>
@@ -49,13 +55,18 @@
   function getConfigData() {
     console.log('getconfigdata');
     var note_input = document.getElementById('note_input');
+    var font_size_select = document.getElementById('font_size_select');
+    var font_size_selection = font_size_select.selectedIndex;
+    var font_size = font_size_select.options[font_size_selection];
  
     var options = {
       'note_input': note_input.value,
+      'font_size': font_size.value
     };
 
     // Save for next launch
     localStorage['note_input'] = options['note_input'];
+    localStorage['font_size'] = font_size_selection;
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -85,10 +96,15 @@
 
   (function() {
     var note_input = document.getElementById('note_input');
+    var font_size_select = document.getElementById('font_size_select');
 
     // Load any previously saved configuration, if available
     if(localStorage['note_input']) {
       note_input.value = localStorage['note_input'];
+    }
+    if(localStorage['font_size']) {
+        font_size_select.selectedIndex = localStorage['font_size'];
+        console.log('Loading font_size_selection' + font_size_select.selectedIndex);
     }
   })();
   </script>
