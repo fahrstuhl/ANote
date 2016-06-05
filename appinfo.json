@@ -17,6 +17,13 @@
     "AppKeyFontSize": 2
   },
   "resources": {
-    "media": []
+    "media": [
+            {
+            "type": "png",
+            "name": "ICON",
+            "file": "icon28.png",
+            "menuIcon": true
+        }
+    ]
   }
 }
