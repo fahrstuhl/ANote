@@ -7,7 +7,7 @@ Pebble.addEventListener('ready', function() {
         font_size = localStorage.getItem('font_size');
     }
     else {
-        note = "Please set your note in the settings";
+        note = "Please enter your note in the settings";
         font_size = 24;
     }
     var dict = {};
