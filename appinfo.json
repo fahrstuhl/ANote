@@ -3,7 +3,7 @@
   "shortName": "A Note",
   "longName": "A Note",
   "companyName": "fahrstuhl",
-  "versionLabel": "1.0.1",
+  "versionLabel": "1.1",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "enableMultiJS": true,
