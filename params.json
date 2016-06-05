@@ -1,0 +1,6 @@
+{
+  "name": "A Note",
+  "tagline": "A Pebble note app",
+  "body": "# A Note\r\nThe simplest note app I could come up with.\r\n\r\nWrite or paste a note in the settings page, maybe choose a font size and read it on your Pebble.\r\n\r\nPerfect for shopping lists and similar.\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
