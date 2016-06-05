@@ -13,7 +13,8 @@
   },
   "appKeys": {
     "AppKeyNoteLength": 0,
-    "AppKeyNote": 1
+    "AppKeyNote": 1,
+    "AppKeyFontSize": 2
   },
   "resources": {
     "media": []
