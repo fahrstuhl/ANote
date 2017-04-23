@@ -1,7 +1,7 @@
 var Clay = require('pebble-clay');
 var clayConfig = require('./config');
-var clayConfigAplite = require('./config-aplite');
 var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+clay.registerComponent(require('./clayTextarea'));
 
 Pebble.addEventListener('ready', function() {
     console.log('PebbleKit JS ready!');

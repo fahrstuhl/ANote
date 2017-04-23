@@ -1,0 +1,52 @@
+[
+    {
+        "type": "heading",
+        "defaultValue": "A Note",
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Note"
+            },
+            {
+                "type": "textarea",
+                "id": "note_input",
+                "messageKey": "AppKeyNote",
+                "label": "Note",
+                
+            }
+        ]
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Settings"
+            },
+            {
+                "type": "radiogroup",
+                "id": "font_size", 
+                "messageKey": "AppKeyFontSize",
+                "label": "Fontsize",
+                "defaultValue": 24,
+                "options": [
+                    {
+                        "label": "Smaller",
+                        "value": 18
+                    },
+                    {
+                        "label": "Default",
+                        "value": 24
+                    },
+                    {
+                        "label": "Larger",
+                        "value": 28
+                    },
+                ]
+            }
+        ]
+    }
+]
