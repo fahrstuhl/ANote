@@ -1,7 +1,7 @@
 [
     {
         "type": "heading",
-        "defaultValue": "A Note",
+        "defaultValue": "A Note"
     },
     {
         "type": "section",
@@ -14,8 +14,7 @@
                 "type": "textarea",
                 "id": "note_input",
                 "messageKey": "AppKeyNote",
-                "label": "Note",
-                
+                "label": "Note"
             }
         ]
     },
@@ -27,7 +26,7 @@
                 "defaultValue": "Settings"
             },
             {
-                "type": "radiogroup",
+                "type": "select",
                 "id": "font_size", 
                 "messageKey": "AppKeyFontSize",
                 "label": "Fontsize",
@@ -44,9 +43,13 @@
                     {
                         "label": "Larger",
                         "value": 28
-                    },
+                    }
                 ]
             }
         ]
+    },
+    {
+        "type": "submit",
+        "defaultValue": "Save"
     }
 ]

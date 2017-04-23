@@ -7,9 +7,9 @@ Pebble.addEventListener('ready', function() {
     console.log('PebbleKit JS ready!');
     var note;
     var font_size;
-    if(localStorage['note'] && localStorage['font_size'] ) {
-        note = localStorage.getItem('note');
-        font_size = localStorage.getItem('font_size');
+    if(localStorage['AppKeyNote'] && localStorage['font_size'] ) {
+        note = localStorage.getItem('AppKeyNote');
+        font_size = localStorage.getItem('AppKeyFontSize');
     }
     else {
         note = "Please enter your note in the settings";
@@ -41,13 +41,13 @@ Pebble.addEventListener('showConfiguration', function() {
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
-    var configData = clay.getSettings(e.response);
-    console.log('Configuration page returned: ' + JSON.stringify(configData));
+    var configData = clay.getSettings(e.response, false);
+    console.log('Clay returned: ' + JSON.stringify(configData));
 
-    var note = configData['note_input']
-    localStorage.setItem('note', note);
-    var font_size = configData['font_size'];
-    localStorage.setItem('font_size', font_size);
+    var note = configData['AppKeyNote']['value']
+    localStorage.setItem('AppKeyNote', note);
+    var font_size = configData['AppKeyFontSize']['value'];
+    localStorage.setItem('AppKeyFontSize', font_size);
 
     var dict = {};
 

@@ -1,12 +1,12 @@
 <div class="component component-textarea">
   <label class="tap-highlight">
-    <span class="label">{{{label}}}</span>
     <span class="textarea">
       <textarea
       data-manipulator-target
         {{each key: attributes}}{{key}}="{{this}}"{{/each}}
     />
     </span>
+    <span class="label">{{{label}}}</span>
   </label>
 
   {{if description}}
