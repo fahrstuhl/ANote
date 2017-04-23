@@ -1,3 +1,8 @@
+var Clay = require('pebble-clay');
+var clayConfig = require('./config');
+var clayConfigAplite = require('./config-aplite');
+var clay = new Clay(clayConfig, null, { autoHandleEvents: false });
+
 Pebble.addEventListener('ready', function() {
     console.log('PebbleKit JS ready!');
     var note;
@@ -32,14 +37,11 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-    var url = 'https://fahrstuhl.github.io/ANote/config/index.html';
-    console.log('Showing configuration page: ' + url);
-
-    Pebble.openURL(url);
+    Pebble.openURL(clay.generateUrl()); 
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
-    var configData = JSON.parse(decodeURIComponent(e.response));
+    var configData = clay.getSettings(e.response);
     console.log('Configuration page returned: ' + JSON.stringify(configData));
 
     var note = configData['note_input']
