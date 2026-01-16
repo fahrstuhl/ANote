@@ -3,8 +3,7 @@
   "author": "fahrstuhl",
   "private": true,
   "dependencies": {
-    "@rebble/clay": "^1.0.6",
-    "pebble-clay": "^1.0.4"
+    "@rebble/clay": "^1.0.6"
   },
   "keywords": [
     "pebble-app"
