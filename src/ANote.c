@@ -2,6 +2,8 @@
 
 static Window *window;
 static ScrollLayer *scroll_layer;
+static TextLayer *text_layer = NULL;
+static StatusBarLayer *s_status_bar;
 static int ScrollByAmount;
 /*
  * Smaller = 18
@@ -10,7 +12,6 @@ static int ScrollByAmount;
  */
 static int FontSize = 24;
 static GFont font;
-static TextLayer *text_layer = NULL;
 static char s_scroll_text[] = "Please set your note in the settings";
 
 #define NoteMaxLength 2048
@@ -126,13 +127,16 @@ static void click_config_provider(void *context) {
 static void refresh_text_layer(char *buffer, int32_t font_size) {
     Layer *window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
-    GRect max_text_bounds = GRect(0, 0, frame.size.w, 2000);
+    GRect max_text_bounds = GRect(0, STATUS_BAR_LAYER_HEIGHT, frame.size.w, 2000);
     if(text_layer != NULL){
         text_layer_destroy(text_layer);
     }
     text_layer = text_layer_create(max_text_bounds);
     scroll_layer_add_child(scroll_layer, text_layer_get_layer(text_layer));
     layer_add_child(window_layer, scroll_layer_get_layer(scroll_layer));
+
+    s_status_bar = status_bar_layer_create();
+    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     ScrollByAmount = 2 * font_size;
     font = get_font_for_size(font_size);
@@ -190,6 +194,7 @@ static void window_load(Window *window) {
 static void window_unload(Window *window) {
     text_layer_destroy(text_layer);
     scroll_layer_destroy(scroll_layer);
+    status_bar_layer_destroy(s_status_bar);
 }
 
 static void init(void) {
