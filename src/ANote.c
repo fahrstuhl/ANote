@@ -146,7 +146,7 @@ static void refresh_text_layer(char *buffer, int32_t font_size) {
     text_layer_set_text_alignment(text_layer, GTextAlignmentLeft);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "length: %u", strlen(buffer));
     GSize max_size = text_layer_get_content_size(text_layer);
-    max_size.h += font_size/2;
+    max_size.h += font_size/2 + STATUS_BAR_LAYER_HEIGHT;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "width: %i, height: %i", max_size.w, max_size.h);
     text_layer_set_size(text_layer, max_size);
     scroll_layer_set_frame(scroll_layer, frame);
