@@ -15,7 +15,7 @@
       "media": [
         {
           "menuIcon": true,
-          "type": "png",
+          "type": "bitmap",
           "name": "ICON",
           "file": "icon25.png"
         }
