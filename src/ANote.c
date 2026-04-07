@@ -1,20 +1,19 @@
 #include <pebble.h>
+#include <stdio.h>
 
 static Window *window;
 static ScrollLayer *scroll_layer;
 static TextLayer *text_layer = NULL;
 static StatusBarLayer *s_status_bar;
-static int ScrollByAmount;
 /*
  * Smaller = 18
  * Default = 24_BOLD
  * Larger = 28
  */
-static int FontSize = 24;
 static GFont font;
-static char s_scroll_text[] = "Please set your note in the settings";
 
-#define NoteMaxLength 2048
+#define NoteMaxLength 4000
+
 const uint32_t inbox_size = NoteMaxLength;
 const uint32_t outbox_size = 16;
 
@@ -31,7 +30,10 @@ typedef enum {
     AppKeyNote = 1,
     AppKeyFontSize = 2
 } AppKeys;
-static char *s_buffer = NULL;
+#define SETTINGS_KEY 1
+static int note_length;
+static int font_size;
+static char* s_buffer = NULL;
 
 static GFont get_font_for_size(int font_size) {
     GFont font;
@@ -59,7 +61,7 @@ static GFont get_font_for_size(int font_size) {
 
 static GPoint get_scroll_amount(ScrollDirection direction) {
     int delta = direction == ScrollDirectionDown ? -1 : +1;
-    GPoint scroll_amount = GPoint(0, delta * ScrollByAmount);
+    GPoint scroll_amount = GPoint(0, delta * 2 * font_size);
     return scroll_amount;
 }
 
@@ -124,7 +126,7 @@ static void click_config_provider(void *context) {
                                 up_long_release_handler);
 }
 
-static void refresh_text_layer(char *buffer, int32_t font_size) {
+static void refresh_text_layer() {
     Layer *window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
     GRect max_text_bounds = GRect(0, STATUS_BAR_LAYER_HEIGHT, frame.size.w, 2000);
@@ -138,10 +140,9 @@ static void refresh_text_layer(char *buffer, int32_t font_size) {
     s_status_bar = status_bar_layer_create();
     layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
-    ScrollByAmount = 2 * font_size;
     font = get_font_for_size(font_size);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "font: %li", font_size);
-    text_layer_set_text(text_layer, buffer);
+    text_layer_set_text(text_layer, s_buffer);
     text_layer_set_font(text_layer, font);
     text_layer_set_text_alignment(text_layer, GTextAlignmentLeft);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "length: %u", strlen(buffer));
@@ -157,16 +158,16 @@ static void refresh_text_layer(char *buffer, int32_t font_size) {
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "trying to receive");
     Tuple *font_size_tuple = dict_find(iter, AppKeyFontSize);
-    int32_t font_size = FontSize;
     if (font_size_tuple) {
         font_size = font_size_tuple->value->int32;
+    } else {
+        font_size = 24;
     }
     Tuple *note_length_tuple = dict_find(iter, AppKeyNoteLength);
-    int32_t note_length = NoteMaxLength;
     if (note_length_tuple) {
         note_length = note_length_tuple->value->int32;
     } else {
-        //APP_LOG(APP_LOG_LEVEL_DEBUG, "didn't receive note length");
+        note_length = NoteMaxLength;
     }
     Tuple *note_tuple = dict_find(iter, AppKeyNote);
     if (note_tuple) {
@@ -178,17 +179,14 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
         char *note = note_tuple->value->cstring;
         snprintf(s_buffer, note_length, "%s", note);
     }
-    refresh_text_layer(s_buffer, font_size);
+    refresh_text_layer();
 }
 
 static void window_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
-    ScrollByAmount = 2 * FontSize;
 
     scroll_layer = scroll_layer_create(frame);
-
-//refresh_text_layer(s_scroll_text, FontSize);
 }
 
 static void window_unload(Window *window) {
