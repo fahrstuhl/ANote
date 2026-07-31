@@ -28,33 +28,35 @@ static ScrollDirection ContinousScroll = NoScrolling;
 typedef enum {
     AppKeyNoteLength = 0,
     AppKeyNote = 1,
-    AppKeyFontSize = 2
+    AppKeyFontSize = 2,
+    AppKeyBoldFont = 3
 } AppKeys;
 #define SETTINGS_KEY 1
 static int note_length;
 static int font_size;
+static bool bold_font;
 static char* s_buffer = NULL;
 
-static GFont get_font_for_size(int font_size) {
+static GFont get_font_for_size(int font_size, bool bold_font) {
     GFont font;
     switch (font_size) {
-        case 9:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_09);
-            break;
         case 14:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_14);
+            font = bold_font ? fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD) : fonts_get_system_font(FONT_KEY_GOTHIC_14);
             break;
         case 18:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_18);
+            font = bold_font ? fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD) : fonts_get_system_font(FONT_KEY_GOTHIC_18);
             break;
         case 24:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
+            font = bold_font ? fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD) : fonts_get_system_font(FONT_KEY_GOTHIC_24);
             break;
         case 28:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_28);
+            font = bold_font ? fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD) : fonts_get_system_font(FONT_KEY_GOTHIC_28);
+            break;
+        case 42:
+            font = bold_font ? fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD) : fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT);
             break;
         default:
-            font = fonts_get_system_font(FONT_KEY_GOTHIC_14);
+            font = fonts_get_system_font(FONT_KEY_GOTHIC_24);
     }
     return font;
 }
@@ -69,9 +71,6 @@ static void scroll(GPoint amount) {
     GPoint current_offset = scroll_layer_get_content_offset(scroll_layer);
     GPoint new_offset = GPoint(0, current_offset.y + amount.y);
     scroll_layer_set_content_offset(scroll_layer, new_offset, true);
-}
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-    text_layer_set_text(text_layer, "Select");
 }
 
 static void continous_scroll_callback(void *context) {
@@ -140,7 +139,7 @@ static void refresh_text_layer() {
     s_status_bar = status_bar_layer_create();
     layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
-    font = get_font_for_size(font_size);
+    font = get_font_for_size(font_size, bold_font);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "font: %li", font_size);
     text_layer_set_text(text_layer, s_buffer);
     text_layer_set_font(text_layer, font);
@@ -178,6 +177,13 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
         s_buffer = calloc((size_t)note_length, sizeof(char));
         char *note = note_tuple->value->cstring;
         snprintf(s_buffer, note_length, "%s", note);
+    }
+    Tuple *bold_font_tuple = dict_find(iter, AppKeyBoldFont);
+    if (bold_font_tuple) {
+        bold_font = bold_font_tuple->value->uint8 == 1;
+    } else {
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "did not receive bold font tuple");
+        bold_font = false;
     }
     refresh_text_layer();
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "author": "fahrstuhl",
   "private": true,
   "dependencies": {
@@ -25,6 +25,7 @@
     "messageKeys": {
       "AppKeyNote": 1,
       "AppKeyFontSize": 2,
+      "AppKeyBoldFont": 3,
       "AppKeyNoteLength": 0
     },
     "enableMultiJS": true,

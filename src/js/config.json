@@ -33,18 +33,32 @@
                 "defaultValue": 24,
                 "options": [
                     {
-                        "label": "Smaller",
+                        "label": "Very small (14pt)",
+                        "value": 14
+                    },
+                    {
+                        "label": "Smaller (18pt)",
                         "value": 18
                     },
                     {
-                        "label": "Default",
+                        "label": "Default (24pt)",
                         "value": 24
                     },
                     {
-                        "label": "Larger",
+                        "label": "Larger (28pt)",
                         "value": 28
+                    },
+                    {
+                        "label": "Very large (42pt)",
+                        "value": 42
                     }
                 ]
+            },
+            {
+                "type": "toggle",
+                "id": "bold_font", 
+                "messageKey": "AppKeyBoldFont",
+                "label": "Use Bold Font"
             }
         ]
     },

@@ -7,13 +7,16 @@ Pebble.addEventListener('ready', function() {
     console.log('Watch requested info from Pebble app and  PebbleKit JS is ready!');
     var note;
     var font_size;
+    var bold_font;
     if(localStorage['note_input'] && localStorage['font_size'] ) {
         note = localStorage.getItem('note_input');
         font_size = localStorage.getItem('font_size');
+        bold_font = localStorage.getItem('bold_font');
     }
     else {
         note = "Please enter your note in the settings";
         font_size = 24;
+        bold_font = 0;
     }
     var dict = {};
 
@@ -27,6 +30,7 @@ Pebble.addEventListener('ready', function() {
     dict['AppKeyNote'] = buffer;
     dict['AppKeyNoteLength'] = buffer.length;
     dict['AppKeyFontSize'] = parseInt(font_size);
+    dict['AppKeyBoldFont'] = bold_font;
     console.log('Sending: ' + JSON.stringify(dict))
     // Send to watchapp
     Pebble.sendAppMessage(dict, function() {
@@ -48,6 +52,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
     localStorage.setItem('note_input', note);
     var font_size = configData['AppKeyFontSize']['value'];
     localStorage.setItem('font_size', font_size);
+    var bold_font = configData['AppKeyBoldFont']['value'];
+    localStorage.setItem('bold_font', bold_font);
 
     var dict = {};
 
@@ -61,6 +67,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     dict['AppKeyNote'] = buffer;
     dict['AppKeyNoteLength'] = buffer.length;
     dict['AppKeyFontSize'] = parseInt(font_size);
+    dict['AppKeyBoldFont'] = bold_font;
     console.log('Sending: ' + JSON.stringify(dict))
     // Send to watchapp
     Pebble.sendAppMessage(dict, function() {
