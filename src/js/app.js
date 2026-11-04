@@ -16,7 +16,7 @@ Pebble.addEventListener('ready', function() {
     else {
         note = "Please enter your note in the settings";
         font_size = 24;
-        bold_font = 0;
+        bold_font = false;
     }
     var dict = {};
 
@@ -30,9 +30,7 @@ Pebble.addEventListener('ready', function() {
     dict['AppKeyNote'] = buffer;
     dict['AppKeyNoteLength'] = buffer.length;
     dict['AppKeyFontSize'] = parseInt(font_size);
-    dict['AppKeyBoldFont'] = bold_font;
-    console.log('Sending: ' + JSON.stringify(dict))
-    // Send to watchapp
+    dict['AppKeyBoldFont'] = Boolean(bold_font);
     Pebble.sendAppMessage(dict, function() {
         console.log('Send successful: ' + JSON.stringify(dict));
     }, function() {
@@ -67,9 +65,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     dict['AppKeyNote'] = buffer;
     dict['AppKeyNoteLength'] = buffer.length;
     dict['AppKeyFontSize'] = parseInt(font_size);
-    dict['AppKeyBoldFont'] = bold_font;
-    console.log('Sending: ' + JSON.stringify(dict))
-    // Send to watchapp
+    dict['AppKeyBoldFont'] = Boolean(bold_font);
     Pebble.sendAppMessage(dict, function() {
         console.log('Send successful: ' + JSON.stringify(dict));
     }, function() {
