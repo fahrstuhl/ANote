@@ -5,11 +5,11 @@ static Window *window;
 static ScrollLayer *scroll_layer;
 static TextLayer *text_layer = NULL;
 static StatusBarLayer *s_status_bar;
-/*
- * Smaller = 18
- * Default = 24_BOLD
- * Larger = 28
- */
+#if defined(PBL_ROUND)
+static Layer *s_indicator_up_layer = NULL;
+static Layer *s_indicator_down_layer = NULL;
+static ContentIndicator *s_indicator = NULL;
+#endif
 static GFont font;
 
 #define NoteMaxLength 4000
@@ -85,14 +85,14 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void up_long_press_handler(ClickRecognizerRef recognizer,
-                                  void *context) {
+        void *context) {
     ContinousScroll = ScrollDirectionUp;
     scroll(get_scroll_amount(ContinousScroll));
     app_timer_register(100, continous_scroll_callback, NULL);
 }
 
 static void up_long_release_handler(ClickRecognizerRef recognizer,
-                                    void *context) {
+        void *context) {
     ContinousScroll = NoScrolling;
 }
 
@@ -101,7 +101,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_long_press_handler(ClickRecognizerRef recognizer,
-                                    void *context) {
+        void *context) {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Pressed");
     ContinousScroll = ScrollDirectionDown;
     scroll(get_scroll_amount(ContinousScroll));
@@ -109,7 +109,7 @@ static void down_long_press_handler(ClickRecognizerRef recognizer,
 }
 
 static void down_long_release_handler(ClickRecognizerRef recognizer,
-                                      void *context) {
+        void *context) {
     ContinousScroll = NoScrolling;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Released");
 }
@@ -120,38 +120,38 @@ static void click_config_provider(void *context) {
     window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
     window_long_click_subscribe(BUTTON_ID_DOWN, 0, down_long_press_handler,
-                                down_long_release_handler);
+            down_long_release_handler);
     window_long_click_subscribe(BUTTON_ID_UP, 0, up_long_press_handler,
-                                up_long_release_handler);
+            up_long_release_handler);
 }
 
 static void refresh_text_layer() {
     Layer *window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
-    GRect max_text_bounds = GRect(0, STATUS_BAR_LAYER_HEIGHT, frame.size.w, 2000);
+    GRect max_text_bounds = GRect(0, 0, frame.size.w, INT16_MAX);
     if(text_layer != NULL){
         text_layer_destroy(text_layer);
     }
     text_layer = text_layer_create(max_text_bounds);
     scroll_layer_add_child(scroll_layer, text_layer_get_layer(text_layer));
-    layer_add_child(window_layer, scroll_layer_get_layer(scroll_layer));
-
-    s_status_bar = status_bar_layer_create();
-    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     font = get_font_for_size(font_size, bold_font);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "font: %li", font_size);
+#if defined(PBL_ROUND)
+    text_layer_enable_screen_text_flow_and_paging(text_layer, 2);
+    text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
+#elif defined(PBL_RECT)
+    text_layer_set_text_alignment(text_layer, GTextAlignmentLeft);
+#endif
     text_layer_set_text(text_layer, s_buffer);
     text_layer_set_font(text_layer, font);
-    text_layer_set_text_alignment(text_layer, GTextAlignmentLeft);
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "length: %u", strlen(buffer));
     GSize max_size = text_layer_get_content_size(text_layer);
     max_size.h += font_size/2 + STATUS_BAR_LAYER_HEIGHT;
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "width: %i, height: %i", max_size.w, max_size.h);
     text_layer_set_size(text_layer, max_size);
-    scroll_layer_set_frame(scroll_layer, frame);
     scroll_layer_set_content_size(scroll_layer,
-                                  GSize(frame.size.w, max_size.h + 4));
+            GSize(frame.size.w, max_size.h + 4));
 }
 
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
@@ -191,23 +191,99 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
 static void window_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect frame = layer_get_frame(window_layer);
+    GRect scroll_bounds = frame;
+#if defined(PBL_ROUND)
+    scroll_bounds.origin.y = 1.5*STATUS_BAR_LAYER_HEIGHT;
+    scroll_bounds.size.h -= 2*STATUS_BAR_LAYER_HEIGHT;
+#elif defined(PBL_RECT)
+    scroll_bounds.origin.y = STATUS_BAR_LAYER_HEIGHT;
+    scroll_bounds.size.h -= scroll_bounds.origin.y;
+#endif
 
-    scroll_layer = scroll_layer_create(frame);
+    scroll_layer = scroll_layer_create(scroll_bounds);
+#if defined(PBL_ROUND)
+    scroll_layer_set_click_config_onto_window(scroll_layer, window);
+    scroll_layer_set_paging(scroll_layer, true);
+#elif defined(PBL_RECT)
+    window_set_click_config_provider(window, click_config_provider);
+#endif
+    layer_add_child(window_layer, scroll_layer_get_layer(scroll_layer));
+
+    s_status_bar = status_bar_layer_create();
+    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+
+#if defined(PBL_ROUND)
+    s_indicator = scroll_layer_get_content_indicator(scroll_layer);
+
+    //NOTE: figuring out where to place the content indicator on round without covering the time is really annoying
+    // s_indicator_up_layer = layer_create(
+    //         GRect(frame.size.w*0.35, STATUS_BAR_LAYER_HEIGHT/2,
+    //             STATUS_BAR_LAYER_HEIGHT*0.6, STATUS_BAR_LAYER_HEIGHT/3));
+    // layer_add_child(window_layer, s_indicator_up_layer);
+    // const ContentIndicatorConfig up_config = (ContentIndicatorConfig) {
+    //     // .layer = s_indicator_up_layer,
+    //     .layer = status_bar_layer_get_layer(s_status_bar),
+    //     .times_out = false,
+    //     .alignment = GAlignCenter,
+    //     .colors = {
+    //         .foreground = status_bar_layer_get_foreground_color(s_status_bar),
+    //         .background = status_bar_layer_get_background_color(s_status_bar)
+    //     }
+    // };
+
+    s_indicator_up_layer = layer_create(
+            GRect(0, STATUS_BAR_LAYER_HEIGHT,
+                frame.size.w, STATUS_BAR_LAYER_HEIGHT/2));
+    layer_add_child(window_layer, s_indicator_up_layer);
+
+    const ContentIndicatorConfig up_config = (ContentIndicatorConfig) {
+        .layer = s_indicator_up_layer,
+        .times_out = false,
+        .alignment = GAlignCenter,
+        .colors = {
+            .foreground = GColorBlack,
+            .background = GColorClear
+        }
+    };
+    content_indicator_configure_direction(s_indicator, ContentIndicatorDirectionUp,
+            &up_config);
+
+    s_indicator_down_layer = layer_create(
+            GRect(0, frame.size.h - STATUS_BAR_LAYER_HEIGHT/2,
+                frame.size.w, STATUS_BAR_LAYER_HEIGHT/2));
+    layer_add_child(window_layer, s_indicator_down_layer);
+    const ContentIndicatorConfig down_config = (ContentIndicatorConfig) {
+        .layer = s_indicator_down_layer,
+        .times_out = false,
+        .alignment = GAlignCenter,
+        .colors = {
+            .foreground = GColorBlack,
+            .background = GColorClear
+        }
+    };
+    content_indicator_configure_direction(s_indicator, ContentIndicatorDirectionDown,
+            &down_config);
+#endif
 }
 
 static void window_unload(Window *window) {
     text_layer_destroy(text_layer);
     scroll_layer_destroy(scroll_layer);
     status_bar_layer_destroy(s_status_bar);
+#if defined(PBL_ROUND)
+    layer_destroy(s_indicator_up_layer);
+    layer_destroy(s_indicator_down_layer);
+    content_indicator_destroy(s_indicator);
+#endif
 }
 
 static void init(void) {
     window = window_create();
-    window_set_click_config_provider(window, click_config_provider);
+
     window_set_window_handlers(window,
-                               (WindowHandlers){
-                                   .load = window_load, .unload = window_unload,
-                               });
+            (WindowHandlers){
+            .load = window_load, .unload = window_unload,
+            });
     app_message_open(inbox_size, outbox_size);
     app_message_register_inbox_received(inbox_received_callback);
     const bool animated = true;
