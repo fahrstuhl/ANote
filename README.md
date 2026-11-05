@@ -5,4 +5,4 @@ Write or paste a note in the settings page, maybe choose a font size and read it
 
 Perfect for shopping lists or similar.
 
-[Get it on the Pebble Appstore!](https://apps.getpebble.com/applications/57542c56d694500794000006)
+Get [ANote on Rebble Appstore](https://apps.rebble.io/en_US/application/57542c56d694500794000006) or [ANote on Pebble Appstore](https://apps.repebble.com/57542c56d694500794000006)!
